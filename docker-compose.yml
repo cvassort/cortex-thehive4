@@ -11,7 +11,7 @@ services:
       - HEAP_NEWSIZE=1G
       - CASSANDRA_CLUSTER_NAME=thp
     volumes:
-      - ./cassandra/data:/var/lib/cassandra/data
+      - cassandra_data:/var/lib/cassandra/data
     networks:
       - Hive
 
@@ -34,8 +34,8 @@ services:
         soft: 65536
         hard: 65536
     volumes:
-      - ./elasticsearch/data:/usr/share/elasticsearch/data
-      - ./elasticsearch/logs:/usr/share/elasticsearch/logs
+      - elasticsearch_data:/usr/share/elasticsearch/data
+      - elasticsearch_logs:/usr/share/elasticsearch/logs
     networks:
       - Hive
   
@@ -49,10 +49,9 @@ services:
     ports:
       - '0.0.0.0:9001:9001'
     volumes:
-      - ./cortex/application.conf:/etc/cortex/application.conf
-      - '/var/run/docker.sock:/var/run/docker.sock'
-      - ./cortex/log/:/var/log/cortex
-      - /tmp:/tmp
+      - cortex_conf:/etc/cortex
+      - cortex_logs:/var/log/cortex
+      - cortex_tmp:/tmp
       #- ./cortex/Cortex-Analyzers:/opt/cortex/analyzers
       #- .cortex/Cortex-Analyzers/analyzers.json:/opt/cortex/analyzers/analyzers.json
     privileged: true
@@ -68,9 +67,9 @@ services:
     ports:
       - '0.0.0.0:9210:9000'
     volumes:
-      - ./thehive/application.conf:/etc/thehive/application.conf
-      - ./thehive/data:/opt/thp/thehive/data
-      - ./thehive/index:/opt/thp/thehive/index
+      - thehive_conf:/etc/thehive
+      - thehive_data:/opt/thp/thehive/data
+      - thehive_index:/opt/thp/thehive/index
     command:
       --cortex-port 9001
       --cortex-keys ${CORTEX_KEY}
@@ -80,3 +79,14 @@ services:
 networks:
     Hive:
         driver: bridge
+
+volumes:
+  cassandra_data:
+  elasticsearch_data:
+  elasticsearch_logs:
+  cortex_conf:
+  cortex_logs:
+  cortex_tmp:
+  thehive_conf:
+  thehive_data:
+  thehive_index:
